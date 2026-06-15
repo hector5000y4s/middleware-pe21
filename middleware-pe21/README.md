@@ -25,3 +25,25 @@
 <pre>Cannot GET /noexiste</pre>
 </body>
 </html>
+
+
+## TA-2.1 Pruebas unitarias básicas
+Para comprobar que los interceptores (el logger y el verificador de API Key) funcionan correctamente frente a diferentes escenarios, implementé pruebas unitarias usando Jest. Esto me permite validar la lógica de los middlewares sin necesidad de levantar el servidor de Express.
+
+**Comando de ejecución:**
+npm test
+
+**Output de las pruebas:**
+\`\`\`text
+> api-hector@1.0.0 test
+> jest --config jest.config.js
+
+ts-jest[config] (WARN) message TS151001: If you have issues related to imports, you should consider setting `esModuleInterop` to `true` in your TypeScript configuration file (usually `tsconfig.json`). See https://blogs.msdn.microsoft.com/typescript/2018/01/31/announcing-typescript-2-7/#easier-ecmascript-module-interoperability for more information.
+ PASS  src/middlewares/auth.test.ts
+ PASS  src/middlewares/logger.test.ts
+
+Test Suites: 2 passed, 2 total
+Tests:       5 passed, 5 total
+Snapshots:   0 total
+Time:        0.512 s, estimated 1 s
+Ran all test suites.
