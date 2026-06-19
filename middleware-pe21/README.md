@@ -53,30 +53,17 @@ Ran all test suites.
 ## PE-2.2 Documentación y versionado de API 
 ## Documentación de Endpoints
 
-### `GET /health`
-Este endpoint se utiliza para verificar la disponibilidad y el estado de salud de la API. No requiere autenticación.
+## Pruebas de los endpoints
+Servidor corriendo en `http://localhost:3000`. Autenticacion: header `x-api-key: secreto-demo`.
 
-* **Método HTTP:** `GET`
-* **Ruta:** `/health`
-* **Datos de entrada:** No requiere parámetros de consulta (query), ni cuerpo (body), ni cabeceras (headers) especiales.
-* **Respuesta exitosa (200 OK):** Retorna un objeto JSON indicando que el servidor está operativo, la fecha/hora de la consulta y la versión de la API.
-  *Ejemplo:* `{"status": "OK", "timestamp": "2026-06-19T15:30:00Z", "version": "1.0.0"}`
-* **Posibles errores:**
-  * **400 Bad Request:** Retorna un objeto JSON indicando un error de sintaxis en la petición del cliente.
-  *Ejemplo:* `{"error": "Bad Request", "details": "La petición contiene sintaxis inválida."}`
-  * **503 Service Unavailable:** Retorna un objeto JSON detallando que el servicio no está disponible (ej. pérdida de conexión con la base de datos).
-  *Ejemplo:* `{"error": "Service Unavailable", "details": "La base de datos principal no responde."}`
+### Escenario 1 — POST /v1/inscripciones con campos válidos (esperado: 201)
+![v1 201 Created](docs/screenshots/01-v1-201.png)
 
----
+### Escenario 2 — POST /v2/inscripciones con payment_method válido (esperado: 201)
+![v2 201 Created](docs/screenshots/02-v2-201.png)
 
-## Análisis de Versionado
+### Escenario 3 — POST /v2/inscripciones sin payment_method (esperado: 400)
+![v2 400 campo faltante](docs/screenshots/03-v2-400-faltante.png)
 
-A continuación, se presentan dos escenarios hipotéticos de cambios en la API y su impacto en la compatibilidad con los clientes actuales.
-
-### 1. Cambio compatible (Backwards-compatible)
-**Propuesta:** Añadir un nuevo campo opcional llamado `uptime` (tiempo de actividad del servidor en segundos) a la respuesta exitosa del endpoint `GET /health`.
-* **Justificación técnica:** Este cambio es retrocompatible porque los clientes actuales que consumen la API ignorarán cualquier campo adicional que no reconozcan en el payload JSON. Su lógica de análisis (parsing) no se romperá, ya que los campos requeridos originales (`status`, `timestamp`) seguirán estando presentes en sus formatos habituales.
-
-### 2. Cambio que rompe la compatibilidad (Breaking change)
-**Propuesta:** Cambiar el tipo de dato del campo `status` en el endpoint `GET /health` de un `string` (ej. `"OK"`) a un `boolean` (ej. `true` o `false`).
-* **Justificación técnica:** Este es un breaking change porque cualquier cliente, aplicación front-end o servicio de monitoreo que esté programado para leer un texto específico (como verificar si `status === "OK"`) fallará o arrojará excepciones de tipado. Requeriría que todos los consumidores de la API modifiquen su código y se desplieguen simultáneamente con la nueva versión de la API para evitar caídas del servicio.
+### Escenario 4 — POST /v2/inscripciones con payment_method inválido (esperado: 400)
+![v2 400 valor inválido](docs/screenshots/04-v2-400-inválido.png)
