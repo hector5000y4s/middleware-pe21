@@ -67,3 +67,12 @@ Servidor corriendo en `http://localhost:3000`. Autenticacion: header `x-api-key:
 
 ### Escenario 4 — POST /v2/inscripciones con payment_method inválido (esperado: 400)
 ![v2 400 valor inválido](docs/screenshots/04-v2-400-inválido.png)
+
+
+## TA-2.2 Documento OpenAPI refinado
+## Reflexión sobre el Contrato de la API
+
+Si otro equipo empezara a consumir esta API mañana, el principal cambio que implementaría en el contrato OpenAPI sería detallar exhaustivamente los esquemas de seguridad (como la autenticación mediante JWT) y añadir ejemplos de respuestas concretas (*mock data*) para cada código de estado HTTP. Esto permitiría al equipo consumidor generar entornos de prueba automáticos y avanzar con el desarrollo del *frontend* o integraciones móviles sin depender de que el *backend* esté completamente desplegado. Adicionalmente, especificaría políticas de *Rate Limiting* y documentaría claramente la estrategia de versionado y depreciación de rutas, garantizando que futuras actualizaciones en la lógica de negocio o en la base de datos no rompan sus sistemas en producción.
+
+---
+**Autor:** Héctor Campoverde

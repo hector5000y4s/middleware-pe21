@@ -1,104 +1,111 @@
-openapi: "3.1.0"
+openapi: 3.0.3
 info:
-  title: UIDE Inscripciones API
-  version: "2.0.0"
+  title: API del Sistema
+  description: Documentación completa de los endpoints del backend.
+  version: 1.0.0
   license:
     name: MIT
-    identifier: MIT
+    url: https://opensource.org/licenses/MIT
 servers:
-  - url: http://localhost:3000
-    description: Desarrollo local
+  - url: https://api.midominio.com/v1
+    description: Servidor de producción
+
+# Configuración de seguridad global (aplica a todos los endpoints)
+security:
+  - bearerAuth: []
 
 paths:
-  /health:
+  /recursos:
     get:
-      operationId: healthCheck
-      summary: Estado del servidor
-      security:
-        - ApiKeyAuth: []
+      summary: Obtiene todos los recursos
+      operationId: getRecursos
       responses:
         '200':
-          description: Servidor activo.
+          description: Lista de recursos obtenida con éxito
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Recurso'
         '401':
-          description: API key ausente o invalida.
-
-  /v1/inscripciones:
+          description: No autorizado
     post:
-      operationId: crearInscripcionV1
-      summary: Crear inscripción (contrato v1)
-      security:
-        - ApiKeyAuth: []
+      summary: Crea un nuevo recurso
+      operationId: createRecurso
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InscripcionV1'
-            example:
-              estudianteId: "uuid-123"
-              materias: ["LTI_05A_458"]
-              periodoId: "2026-1"
+              $ref: '#/components/schemas/RecursoInput'
       responses:
         '201':
-          description: Inscripción creada.
+          description: Recurso creado exitosamente
         '400':
-          description: Payload inválido.
-        '401':
-          description: API key ausente o invalida.
+          description: Error en los datos enviados
 
-  /v2/inscripciones:
-    post:
-      operationId: crearInscripcionV2
-      summary: Crear inscripción con método de pago (contrato v2)
-      security:
-        - ApiKeyAuth: []
+  /recursos/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: ID del recurso
+    get:
+      summary: Obtiene un recurso por ID
+      operationId: getRecursoById
+      responses:
+        '200':
+          description: Detalles del recurso
+        '404':
+          description: Recurso no encontrado
+    put:
+      summary: Actualiza un recurso existente
+      operationId: updateRecurso
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/InscripcionV2'
-            example:
-              estudianteId: "uuid-123"
-              materias: ["LTI_05A_458"]
-              periodoId: "2026-1"
-              payment_method: "scholarship"
+              $ref: '#/components/schemas/RecursoInput'
       responses:
-        '201':
-          description: Inscripción creada.
-        '400':
-          description: Payload inválido o payment_method fuera de enum.
-        '401':
-          description: API key ausente o invalida.
+        '200':
+          description: Recurso actualizado
+        '404':
+          description: Recurso no encontrado
+    delete:
+      summary: Elimina un recurso
+      operationId: deleteRecurso
+      responses:
+        '204':
+          description: Recurso eliminado correctamente
+        '404':
+          description: Recurso no encontrado
 
 components:
   securitySchemes:
-    ApiKeyAuth:
-      type: apiKey
-      in: header
-      name: x-api-key
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
-    InscripcionV1:
+    Recurso:
       type: object
-      required: [estudianteId, materias, periodoId]
       properties:
-        estudianteId:
+        id:
           type: string
-          format: uuid
-        materias:
-          type: array
-          items:
-            type: string
-          minItems: 1
-        periodoId:
+        nombre:
           type: string
-    InscripcionV2:
-      allOf:
-        - $ref: '#/components/schemas/InscripcionV1'
-        - type: object
-          required: [payment_method]
-          properties:
-            payment_method:
-              type: string
-              enum: [debit, credit, scholarship]
-      unevaluatedProperties: false
+        descripcion:
+          type: string
+    RecursoInput:
+      type: object
+      required:
+        - nombre
+      properties:
+        nombre:
+          type: string
+        descripcion:
+          type: string
